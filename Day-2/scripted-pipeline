@@ -1,0 +1,58 @@
+node {
+    
+    stage('checkout ') { 
+       
+        git branch: 'main', url:'https://github.com/mahimapatel93/Terraform_Practice.git'
+    }
+    stage('terraform init') {
+       dir('Day-1'){
+       sh 'terraform init'
+       }
+    }
+     stage('terraform plan') {
+       dir('Day-1'){
+       sh 'terraform plan'
+       }
+    }
+     stage('terraform apply') {
+       dir('Day-1'){
+       sh 'terraform apply -auto-approve'
+       }
+    }
+    
+}
+
+// scripted pipeline with choice parameter
+
+// node {
+//    properties([
+//         parameters([
+//             choice(
+//                 name: 'action',
+//                 choices: ['apply', 'destroy'],
+//                 description: 'Select Terraform action'
+//             )
+//         ])
+//     ])
+
+//     stage('checkout ') { 
+       
+//         git branch: 'main', url:'https://github.com/mahimapatel93/Terraform_Practice.git'
+//     }
+//     stage('terraform init') {
+//        dir('Day-1'){
+//        sh 'terraform init'
+//        }
+//     }
+//      stage('terraform plan') {
+//        dir('Day-1'){
+//        sh 'terraform plan'
+//        }
+//     }
+//      stage('terraform apply/destroy') {
+//        dir('Day-1'){
+//        sh "terraform ${params.action} -auto-approve"
+//        }
+//     }
+    
+// }
