@@ -1,0 +1,43 @@
+pipeline {
+    agent any
+
+    parameters {
+        choice(
+            name: 'ACTION',
+            choices: ['apply', 'destroy'],
+            description: 'Select Terraform action'
+        )
+    }
+
+    stages {
+       stage('terraform checkout){
+             steps{
+               git branch: 'main', url: 'https://github.com/mahimapatel93/jenkins'
+             }
+       }
+             
+        stage('terraform init') {
+            steps {
+                dir('Day-2/Day-1') {
+                    sh 'terraform init'
+                }
+            }
+        }
+
+        stage('terraform plan') {
+            steps {
+                dir('Day-2/Day-1') {
+                    sh 'terraform plan'
+                }
+            }
+        }
+
+        stage('terraform apply/destroy') {
+            steps {
+                dir('Day-2/Day-1') {
+                    sh "terraform ${params.ACTION} -auto-approve"
+                }
+            }
+        }
+    }
+}
