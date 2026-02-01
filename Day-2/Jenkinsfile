@@ -11,7 +11,7 @@ pipeline {
 
     stages {
        stage('terraform checkout){
-             steps{
+             steps {
                git branch: 'main', url: 'https://github.com/mahimapatel93/Terraform_Practice.git'    
              }
        }
@@ -41,4 +41,5 @@ pipeline {
         }
     }
 }
+
 
