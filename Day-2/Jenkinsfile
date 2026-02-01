@@ -12,13 +12,13 @@ pipeline {
     stages {
        stage('terraform checkout){
              steps{
-               git branch: 'main', url: 'https://github.com/mahimapatel93/jenkins'
+               git branch: 'main', url: 'https://github.com/mahimapatel93/Terraform_Practice.git'    
              }
        }
              
         stage('terraform init') {
             steps {
-                dir('Day-2/Day-1') {
+                dir('Day-1') {
                     sh 'terraform init'
                 }
             }
@@ -26,7 +26,7 @@ pipeline {
 
         stage('terraform plan') {
             steps {
-                dir('Day-2/Day-1') {
+                dir('Day-1') {
                     sh 'terraform plan'
                 }
             }
@@ -34,10 +34,11 @@ pipeline {
 
         stage('terraform apply/destroy') {
             steps {
-                dir('Day-2/Day-1') {
+                dir('Day-1') {
                     sh "terraform ${params.ACTION} -auto-approve"
                 }
             }
         }
     }
 }
+
