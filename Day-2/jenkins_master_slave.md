@@ -11,23 +11,25 @@ This setup improves scalability, security, and performance by distributing workl
 
 ### High-Level Flow
 
+                    +-----------------------------+
+                    |        Jenkins Master       |
+                    |            (EC2)            |
+                    |      SSH Private Key        |
+                    +--------------+--------------+
+                                   |
+                     Controller-Agent / SSH
+                                   |
+        -----------------------------------------------------------
+        |                         |                             |
++---------------+        +---------------+             +---------------+
+|   Slave-1     |        |   Slave-2     |             |   Slave-3     |
+| (Agent Mode)  |        |  (SSH Agent)  |             |  (SSH Agent)  |
+|     EC2       |        |     EC2       |             |     EC2       |
+|  Public Key   |        |  Public Key   |             |  Public Key   |
++-------+-------+        +-------+-------+             +-------+-------+
+        |                        |                             |
+     Docker               App Deployment                   Terraform
 
-                    +----------------------+ private-key
-                    |   Jenkins Master     |
-                    |       (EC2)          |     
-                    +----------+-----------+
-                               |                                                  
-                     / SSH / controller-agent
-                               |
-        ------------------------------------------------  public-key
-        |                    |                        |
-   +-----------+        +-----------+          +-----------+
-   |  Slave-1  |        |  Slave-2  |          |  Slave-3  |
-   | (Agent)   | ec2    | (SSH)     |   ec2    | (SSH)     | ec2
-   +-----------+        +-----------+          +-----------+
-        |                    |                        |
-     Docker          App Deployment             Terraform
-```
 
 ---
 
