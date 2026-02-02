@@ -1,4 +1,4 @@
-# Jenkins Master–Slave (Controller–Agent) Setup Documentation
+# Jenkins Master–Slave (Controller–Agent, SSH method) Setup Documentation
 
 ## Overview
 This document explains the Jenkins Master–Slave (Controller–Agent) architecture implemented on AWS EC2 instances, including execution of pipelines on private servers using **Controller-Agent and SSH methods via a Load Balancer**.
@@ -66,9 +66,22 @@ This setup improves scalability, security, and performance by distributing workl
   - Git
   - Terraform
 - Jenkins unlocked using:
+
+
   ```
-  http://<load-balancer-dns>:8080
+         
+    ## Private Jenkins Master Setup
+
+     - Jenkins Master deployed in private subnet
+     - Load Balancer created and attached
+     - Target Group configured
+     - Allowed traffic:
+     - Port: `8080`
+     - Protocol: `HTTP`
+
+           http://<load-balancer-dns>:8080
   ```
+
 - Recommended plugins installed
 - Master used only for orchestration
 
@@ -108,7 +121,7 @@ This setup improves scalability, security, and performance by distributing workl
   - Authentication: SSH private key (.pem)
 - Host Key Verification Strategy:
   ```
-  Non-verifying Verification Strategy
+    Non-verifying Verification Strategy
   ```
 
 ---
@@ -138,38 +151,30 @@ pipeline {
 }
 ```
 
-- Pipeline runs only on matching label
-- If no agent matches, job remains pending
+    - Pipeline runs only on matching label
+    - If no agent matches, job remains pending
 
 ---
 
-## Private Jenkins Master Setup
 
-- Jenkins Master deployed in private subnet
-- Load Balancer created and attached
-- Target Group configured
-- Allowed traffic:
-  - Port: `8080`
-  - Protocol: `HTTP`
+---
+ 
+    ## Benefits
+
+    - Secure execution on private servers
+    - Scalable architecture
+    - Efficient resource utilization
+    - Supports Docker, Terraform, and application deployments
+    - Label-based job control
 
 ---
 
-## Benefits
+    ## Resume / LinkedIn Line
 
-- Secure execution on private servers
-- Scalable architecture
-- Efficient resource utilization
-- Supports Docker, Terraform, and application deployments
-- Label-based job control
+     **Executed Jenkins pipelines on private servers using Controller–Agent and SSH methods via Master connected through Load Balancer.**
 
 ---
 
-## Resume / LinkedIn Line
+    ## Interview Summary
 
-**Executed Jenkins pipelines on private servers using Controller–Agent and SSH methods via Master connected through Load Balancer.**
-
----
-
-## Interview Summary
-
-Jenkins Master manages scheduling and orchestration, while SSH-connected agents execute pipelines securely on private EC2 servers using label-based routing.
+    Jenkins Master manages scheduling and orchestration, while SSH-connected agents execute pipelines securely on private EC2 servers using label-based routing.
