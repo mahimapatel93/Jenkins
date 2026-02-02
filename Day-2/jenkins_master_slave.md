@@ -10,12 +10,14 @@ This setup improves scalability, security, and performance by distributing workl
 ## Jenkins Architecture
 
 ### High-Level Flow
-
+---
                     +-----------------------------+
                     |        Jenkins Master       |
                     |            (EC2)            |
                     |      SSH Private Key        |
                     +--------------+--------------+
+                                   |
+                          Application Load Balancer
                                    |
                      Controller-Agent / SSH
                                    |
@@ -29,6 +31,7 @@ This setup improves scalability, security, and performance by distributing workl
 +-------+-------+        +-------+-------+             +-------+-------+
         |                        |                             |
      Docker               App Deployment                   Terraform
+
 
 
 ---
