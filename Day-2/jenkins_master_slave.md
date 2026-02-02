@@ -99,12 +99,12 @@ This setup improves scalability, security, and performance by distributing workl
 - Launch Method: Launch agent by connecting it to the controller
 - Free Disk Space Threshold: `200 MB`
 
+
 **Notes**
 - Java and Git installed on agent
 - Node verified online before execution
 
 ---
-
 ### Slave-2 (SSH Agent Method)
 
 - Node Name: `slave-2`
@@ -113,6 +113,7 @@ This setup improves scalability, security, and performance by distributing workl
 - Remote Root Directory: `/home/ec2-user`
 - Label: `test`
 - Launch Method: Launch agents via SSH
+
 
 #### SSH Configuration
 - Host: `<private-ec2-ip>`
@@ -125,6 +126,7 @@ This setup improves scalability, security, and performance by distributing workl
   ```
 
 ---
+
 
 ## Pipeline Execution Using Labels
 
