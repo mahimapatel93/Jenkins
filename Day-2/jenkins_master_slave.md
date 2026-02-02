@@ -1,54 +1,115 @@
-# Jenkins Master-Slave Setup Documentation
+# Jenkins Master–Slave (Controller–Agent) Setup Documentation
 
 ## Overview
+This document explains the Jenkins Master–Slave (Controller–Agent) architecture implemented on AWS EC2 instances, including execution of pipelines on private servers using **Controller-Agent and SSH methods via a Load Balancer**.
 
-This document describes the Jenkins Master-Slave setup implemented for private servers, using both Controller-Agent and SSH methods via a Load Balancer.
+This setup improves scalability, security, and performance by distributing workloads across multiple agent nodes.
 
-## Architecture
+---
 
+## Jenkins Architecture
+
+### High-Level Flow
+
+
+                    +----------------------+ private-key
+                    |   Jenkins Master     |
+                    |       (EC2)          |     
+                    +----------+-----------+
+                               |                                                  
+                     / SSH / controller-agent
+                               |
+        ------------------------------------------------  public-key
+        |                    |                        |
+   +-----------+        +-----------+          +-----------+
+   |  Slave-1  |        |  Slave-2  |          |  Slave-3  |
+   | (Agent)   | ec2    | (SSH)     |   ec2    | (SSH)     | ec2
+   +-----------+        +-----------+          +-----------+
+        |                    |                        |
+     Docker          App Deployment             Terraform
 ```
-            +------------------+
-            |   Jenkins Master  |
-            |   (Master Server) |
-            +---------+--------+
-                      |
-          Load Balancer / SSH Connection
-                      |
-    --------------------------------------
-    |                |                    |
-+---------+      +---------+          +---------+
-| Slave-1 |      | Slave-2 |          | Slave-3 |
-|(Agent)  |      | (SSH)   |          | (SSH)   |
-+---------+      +---------+          +---------+
-      |                |                    |
-   Docker          App Deployment       Terraform
-```
 
-## Steps Performed
+---
 
-### 1. Master Server Setup
+## Key Concepts
 
-* Deployed Jenkins Master server.
-* Connected Master to private servers through a Load Balancer since private servers are not publicly accessible.
-* Unlocked Jenkins and installed recommended plugins.
+- Jenkins is installed **only on the Master**
+- Slaves (Agents) execute jobs assigned by the Master
+- Communication between Master and Agents happens via **SSH**
+- Pipelines are routed to agents using **labels**
+- Supports execution on **private servers via Load Balancer**
 
-### 2. Agent Node Configuration
+---
 
-* Created Agent nodes for Controller-Agent method.
-* Configured SSH access for private server execution.
-* Registered nodes with Master for pipeline execution.
-* Set remote root directory, labels, and number of executors.
+## EC2 Instances Created
 
-### 3. Pipeline Execution Methods
+1. Jenkins Master (EC2)
+2. Slave-1 (Controller-Agent)
+3. Slave-2 (SSH Agent)
+4. Optional additional slaves for scaling
 
-* **Controller-Agent**: Master assigns pipeline jobs to Agent nodes.
-* **SSH**: Master executes pipelines directly on private servers using SSH.
+---
 
-### 4. Pipeline Example
+## Jenkins Master Setup
+
+- Installed:
+  - Java
+  - Jenkins
+  - Git
+  - Terraform
+- Jenkins unlocked using:
+  ```
+  http://<load-balancer-dns>:8080
+  ```
+- Recommended plugins installed
+- Master used only for orchestration
+
+---
+
+## Agent Node Configuration
+
+### Slave-1 (Controller-Agent Method)
+
+- Node Name: `slave-1`
+- Type: Permanent Agent
+- Executors: `1`
+- Remote Root Directory: `/home/ec2-user`
+- Label: `dev`
+- Launch Method: Launch agent by connecting it to the controller
+- Free Disk Space Threshold: `200 MB`
+
+**Notes**
+- Java and Git installed on agent
+- Node verified online before execution
+
+---
+
+### Slave-2 (SSH Agent Method)
+
+- Node Name: `slave-2`
+- Type: Permanent Agent
+- Executors: `1`
+- Remote Root Directory: `/home/ec2-user`
+- Label: `test`
+- Launch Method: Launch agents via SSH
+
+#### SSH Configuration
+- Host: `<private-ec2-ip>`
+- Credentials:
+  - Username: `ec2-user`
+  - Authentication: SSH private key (.pem)
+- Host Key Verification Strategy:
+  ```
+  Non-verifying Verification Strategy
+  ```
+
+---
+
+## Pipeline Execution Using Labels
 
 ```groovy
 pipeline {
-    agent { label 'dev' }  ## test
+    agent { label 'dev' }   // or 'test'
     stages {
         stage('Checkout') {
             steps {
@@ -69,13 +130,38 @@ pipeline {
 }
 ```
 
-### 5. Benefits
+- Pipeline runs only on matching label
+- If no agent matches, job remains pending
 
-* Secure execution on private servers via Load Balancer.
-* Flexible pipeline execution using Controller-Agent and SSH.
-* Scalable architecture by adding more Agent nodes.
-* Label-based job assignment ensures pipelines run only on intended nodes.
+---
 
-### 6. Resume/LinkedIn Caption
+## Private Jenkins Master Setup
 
-**"Executed Jenkins pipelines on private servers using Controller-Agent and SSH methods via Master connected through Load Balancer."**
+- Jenkins Master deployed in private subnet
+- Load Balancer created and attached
+- Target Group configured
+- Allowed traffic:
+  - Port: `8080`
+  - Protocol: `HTTP`
+
+---
+
+## Benefits
+
+- Secure execution on private servers
+- Scalable architecture
+- Efficient resource utilization
+- Supports Docker, Terraform, and application deployments
+- Label-based job control
+
+---
+
+## Resume / LinkedIn Line
+
+**Executed Jenkins pipelines on private servers using Controller–Agent and SSH methods via Master connected through Load Balancer.**
+
+---
+
+## Interview Summary
+
+Jenkins Master manages scheduling and orchestration, while SSH-connected agents execute pipelines securely on private EC2 servers using label-based routing.
