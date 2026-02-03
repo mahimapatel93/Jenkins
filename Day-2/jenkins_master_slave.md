@@ -132,21 +132,46 @@ This setup improves scalability, security, and performance by distributing workl
 
 ```groovy
 pipeline {
-    agent { label 'dev' }   // or 'test'
+    agent {
+        label 'dev'  # 'test'        --------------node1, node2, node3 
+    }
+
+    parameters {
+        choice(
+            name: 'ACTION',
+            choices: ['apply', 'destroy'],
+            description: 'Select Terraform action'
+        )
+    }
+
     stages {
-        stage('Checkout') {
+        stage('Terraform Checkout') {
             steps {
-                git branch: 'main', url: 'git@github.com:username/repo.git'
+                git branch: 'main', url: 'https://github.com/mahimapatel93/Terraform_Practice.git'
             }
         }
+
         stage('Terraform Init') {
             steps {
-                sh 'terraform init'
+                dir('Day-1') {
+                    sh 'terraform init'
+                }
             }
         }
-        stage('Terraform Apply') {
+
+        stage('Terraform Plan') {
             steps {
-                sh 'terraform apply -auto-approve'
+                dir('Day-1') {
+                    sh 'terraform plan'
+                }
+            }
+        }
+
+        stage('Terraform Apply/Destroy') {
+            steps {
+                dir('Day-1') {
+                    sh "terraform ${params.ACTION} -auto-approve"
+                }
             }
         }
     }
