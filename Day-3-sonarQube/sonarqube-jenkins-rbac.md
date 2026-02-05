@@ -91,13 +91,60 @@ Manage Jenkins → System → SonarQube Servers
 
 ### Jenkinsfile (Example)
 ```groovy
-stage('SonarQube Analysis') {
-    steps {
-        withSonarQubeEnv('sonar') {
-            sh 'mvn sonar:sonar'
+pipeline {
+    agent any
+    
+    environment {
+        SONARQUBE = 'sonar'  // SonarQube server name
+    }
+
+    stages {
+        stage('SCM') {
+            steps {
+                git branch: 'main', url: 'https://github.com/<your-repo>.git'
+            }
+        }
+        
+        stage('Clean') {
+            steps {
+                sh 'mvn clean'
+            }
+        }
+        
+        stage('Code Quality') {
+            steps {
+                withSonarQubeEnv(SONARQUBE) {
+                    sh 'mvn sonar:sonar'
+                }
+            }
+        }
+        
+        stage('Quality Gate') {
+            steps {
+                script {
+                    def qg = waitForQualityGate()
+                    echo "Quality Gate Response: ${qg}"  // Debugging output
+
+                    if (qg.status != 'OK') {  // Fail only if QG is not OK
+                        error "❌ Pipeline failed due to not meeting SonarQube Quality Gate requirements."
+                    } else {
+                        echo "✅ Quality Gate Passed!"
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo '🎉 Build and SonarQube analysis completed successfully with passing Quality Gates.'
+        }
+        failure {
+            echo '❌ Build or SonarQube Quality Gate validation failed.'
         }
     }
 }
+
 ```
 
 ## 6. Role-Based Access Control (RBAC)
