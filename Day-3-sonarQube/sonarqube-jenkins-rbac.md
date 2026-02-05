@@ -98,6 +98,7 @@ stage('SonarQube Analysis') {
         }
     }
 }
+```
 
 ## 6. Role-Based Access Control (RBAC)
 
