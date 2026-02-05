@@ -98,78 +98,97 @@ stage('SonarQube Analysis') {
         }
     }
 }
-6. Role-Based Access Control (RBAC)
-Jenkins Path
+
+## 6. Role-Based Access Control (RBAC)
+
+### Jenkins Path
 Manage Jenkins → Manage and Assign Roles
-6.1 Global Role Configuration
-Path
+
+
+---
+
+### 6.1 Global Role Configuration
+
+#### Path
 Manage Jenkins → Manage and Assign Roles → Manage Roles
-Global Role: developer
-Permissions:
 
-Overall → Read
 
-(Only dashboard access)
+#### Global Role
+- **Role Name:** `developer`
 
-6.2 Item Roles (Pipeline-Level Access)
-Path
+#### Permissions
+- `Overall → Read`  
+  *(Allows dashboard access only)*
+
+---
+
+### 6.2 Item Roles (Pipeline-Level Access)
+
+#### Path
 Manage Jenkins → Manage and Assign Roles → Manage Roles → Item Roles
-Steps
-Create role name (example): pipeline-dev1
 
-Job name pattern:
 
-pipeline-dev1.* OR exact job name
+#### Steps
+- Create role name (example): `pipeline-dev1`
+- Job name pattern:
+  - `pipeline-dev1.*`  
+  **OR**
+  - Exact job name
 
-Permissions:
+#### Permissions
+- `Job → Read`
+- `Job → Build`
 
-Job → Read
+#### Repeat for other pipelines
+- `pipeline-dev2`
+- `pipeline-projectA`
 
-Job → Build
+---
 
-Repeat for other pipelines:
+### 6.3 Assign Roles to Users
 
-pipeline-dev2
-
-pipeline-projectA
-
-6.3 Assign Roles to Users
-Path
+#### Path
 Manage Jenkins → Manage and Assign Roles → Assign Roles
-Assignment
-User	Global Role	Item Role
-dev1	developer	pipeline-dev1
-dev2	developer	pipeline-dev2
-✔️ Assign Global Role + Item Role both
-✔️ Click Save
 
-Result
-Developers can:
-Login to Jenkins
 
-View dashboard
+#### Role Assignment
 
-Run only their assigned pipelines
+| User | Global Role | Item Role |
+|-----|------------|-----------|
+| dev1 | developer | pipeline-dev1 |
+| dev2 | developer | pipeline-dev2 |
 
-Developers cannot:
-See other pipelines
+✔️ Assign **both Global Role and Item Role**  
+✔️ Click **Save**
 
-Edit job configuration
+---
 
-Access admin settings
+## Result
 
-Key Outcome
-✅ SonarQube integrated with Jenkins
-✅ RBAC successfully implemented
-✅ Secure and controlled CI execution
-✅ No unauthorized pipeline access
+### Developers can:
+- Login to Jenkins  
+- View Jenkins dashboard  
+- Run only their assigned pipelines  
 
-Notes
-Global role is mandatory for UI access
+### Developers cannot:
+- See other pipelines  
+- Edit job configuration  
+- Access admin or system settings  
 
-Item roles work only after global permission
+---
 
-Regex/job name must match exactly
+## Key Outcome
 
-RBAC prevents accidental or unauthorized builds
+✅ SonarQube integrated with Jenkins  
+✅ RBAC successfully implemented  
+✅ Secure and controlled CI execution  
+✅ No unauthorized pipeline access  
 
+---
+
+## Notes
+
+- Global role is **mandatory** for Jenkins UI access  
+- Item roles work only **after global permission is assigned**  
+- Regex or job name must match **exactly**  
+- RBAC prevents accidental or unauthorized builds
