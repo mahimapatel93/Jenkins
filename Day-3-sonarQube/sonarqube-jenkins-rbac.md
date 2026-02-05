@@ -80,7 +80,7 @@ Manage Jenkins → System → SonarQube Servers
 1. Click **Add SonarQube**
 2. Set **Name**: `sonar`
 3. Set **Server URL**:  
-http://<sonarqube-ip>:9000
+     `http://<sonarqube-ip>:9000`
 
 4. Configure **Authentication Token**:
 - Click **Add**
